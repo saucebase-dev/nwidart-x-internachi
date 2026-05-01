@@ -1,0 +1,22 @@
+{
+  "system": "nwidart",
+  "module_count": 75,
+  "condition": "opcache-off",
+  "timestamp": "2026-05-01T08:12:15.771089Z",
+  "bare": {
+    "boot_time_ms_avg": 736.529,
+    "boot_time_ms_p95": 829.518,
+    "total_time_ms_avg": 738.039,
+    "total_time_ms_p95": 830.997,
+    "peak_memory_mb_avg": 56.5,
+    "samples": 50
+  },
+  "data": {
+    "boot_time_ms_avg": 799.238,
+    "boot_time_ms_p95": 1135.867,
+    "total_time_ms_avg": 853.491,
+    "total_time_ms_p95": 1199.797,
+    "peak_memory_mb_avg": 56.5,
+    "samples": 50
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "system": "internachi",
+  "module_count": 200,
+  "condition": "opcache-off",
+  "timestamp": "2026-04-30T20:54:08.191599Z",
+  "bare": {
+    "boot_time_ms_avg": 1943.517,
+    "boot_time_ms_p95": 2738.472,
+    "total_time_ms_avg": 1970.549,
+    "total_time_ms_p95": 2879.948,
+    "peak_memory_mb_avg": 50.059,
+    "samples": 59
+  },
+  "data": {
+    "boot_time_ms_avg": 1374.926,
+    "boot_time_ms_p95": 1650.207,
+    "total_time_ms_avg": 1450.787,
+    "total_time_ms_p95": 1742.045,
+    "peak_memory_mb_avg": 52.02,
+    "samples": 50
+  }
+}
