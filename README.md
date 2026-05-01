@@ -141,7 +141,7 @@ nwidart-x-internachi/   (this repository)
     application/    # Cloned app (gitignored — created by setup.sh)
   nwidart/          # Output: run_25_opcache-off.json, ..., summary.csv
     application/    # Cloned app (gitignored — created by setup.sh)
-  BENCHMARK.md      # This document
+  README.md         # This document
 ```
 
 ### Reproducing This Benchmark
