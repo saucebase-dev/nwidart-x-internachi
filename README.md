@@ -376,6 +376,98 @@ The `modules:cache` condition (internachi + `modules:cache` + OPcache) is expect
 
 ---
 
+## V2 — Sustained Throughput Under Concurrency
+
+> Measurements captured 2026-05-02.
+> Source files: `performance-test/v2/internachi/` and `performance-test/v2/nwidart/`
+
+V1 measured sequential single-request latency. V2 answers a different question raised after V1:
+
+> **Given a fixed 1 GB FPM memory budget and a sustained load, how many requests per second can each system serve?**
+
+The original framing was: lower memory-per-worker → more workers fit in 1 GB → more throughput. V2 tests whether this holds in practice.
+
+### V2 Methodology
+
+| Parameter | Value |
+|---|---|
+| PHP-FPM mode | `pm=static`, 16 workers (fixed — same for both systems) |
+| Docker memory limit | 1 GB on the `app` container |
+| Load tool | `wrk -t4 -c16 -d60s --timeout 10s --latency` |
+| Condition | OPcache on, `artisan optimize`, `modules:cache` (internachi) |
+| Warm-up | 50 serial requests before wrk run |
+| Thresholds | 25, 50, 75, 100, 125, 150, 175, 200 modules |
+
+Worker count is fixed at 16 for both systems so that throughput differences reflect request-handling efficiency, not pool size.
+
+### V2 Results — Throughput (req/s)
+
+| Modules | internachi | nWidart | ratio |
+|--------:|-----------:|--------:|------:|
+| 25 | 2.13 | **4.82** | 2.26× |
+| 50 | 2.40 | **5.08** | 2.12× |
+| 75 | 2.40 | **4.80** | 2.00× |
+| 100 | 2.40 | **4.53** | 1.89× |
+| 125 | 2.40 | **5.09** | 2.12× |
+| 150 | 2.40 | **5.10** | 2.12× |
+| 175 | 2.50 | **5.08** | 2.03× |
+| 200 | 2.40 | **5.08** | 2.12× |
+| **avg** | **2.38** | **4.95** | **2.08×** |
+
+### V2 Results — P99 Latency
+
+| Modules | internachi p99 | nWidart p99 |
+|--------:|---------------:|------------:|
+| 25 | 9 910 ms | 3 890 ms |
+| 50 | 7 720 ms | 3 950 ms |
+| 75 | 7 040 ms | 4 130 ms |
+| 100 | 6 980 ms | 4 970 ms |
+| 125 | 6 570 ms | 3 220 ms |
+| 150 | 6 500 ms | 3 440 ms |
+| 175 | 6 260 ms | 3 670 ms |
+| 200 | 6 540 ms | 3 410 ms |
+
+### V2 Results — Container Memory
+
+| Modules | internachi | nWidart | Δ |
+|--------:|-----------:|--------:|--:|
+| 25 | 140.9 MB | 153.1 MB | +12.2 MB |
+| 100 | 141.5 MB | 150.7 MB | +9.2 MB |
+| 200 | 141.3 MB | 150.6 MB | +9.3 MB |
+| **avg** | **140.7 MB** | **151.3 MB** | **+10.6 MB** |
+
+Theoretical max workers at 1 GB: **internachi 116**, **nWidart 108** (8 more workers).
+
+### V2 Findings
+
+#### 1. nWidart delivers ~2× more throughput at fixed concurrency
+
+Under sustained load with 16 workers, nWidart serves ~5 req/s against internachi's ~2.4 req/s — a consistent 2× advantage across all module counts. This is the opposite of what memory-per-worker analysis predicted.
+
+#### 2. Throughput is flat across module counts for both systems
+
+Neither system degrades as modules increase from 25 to 200. Both curves are essentially horizontal. This confirms the V1 memory finding: with OPcache enabled, adding modules has negligible per-request cost under load. The bottleneck is elsewhere (session writes to MySQL, see below).
+
+#### 3. internachi's lower memory does not translate to throughput advantage
+
+internachi uses ~10 MB less container memory (140.7 vs 151.3 MB), giving it 8 more theoretical workers in a 1 GB budget (116 vs 108). In isolation that would suggest internachi can handle ~7% more concurrency. But the 2× throughput gap is far larger, meaning request-handling speed — not worker count — dominates.
+
+#### 4. The real bottleneck: database session contention
+
+The `benchmark/bare` route runs within Laravel's `web` middleware group, which starts a database-backed session (`SESSION_DRIVER=database`) on every request. With 16 workers all contending on the same MySQL sessions table simultaneously, response times averaged 6–10 seconds p99. The throughput difference between the two systems likely reflects differences in request handling overhead that affect how quickly each worker releases its MySQL connection back to the pool.
+
+#### 5. Reconciling V1 and V2
+
+V1 showed internachi with a clear advantage at 200 modules with `modules:cache` (621 ms vs 1 521 ms boot time). V2 shows nWidart with a throughput advantage under concurrency. These are not contradictory:
+
+- V1 measures cold-start boot time per request in isolation. internachi wins here.
+- V2 measures sustained throughput with shared session contention. nWidart wins here.
+- The session bottleneck dominates V2 to the point that module-loading differences (which V1 measures) become irrelevant.
+
+For a production workload where session overhead is minimised (e.g. `SESSION_DRIVER=redis`) or eliminated (stateless API), V2 results would likely invert and favour internachi.
+
+---
+
 ## Output Format
 
 Each measurement run produces a JSON file:

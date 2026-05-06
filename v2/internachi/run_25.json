@@ -1,0 +1,17 @@
+{
+  "system": "internachi",
+  "module_count": 25,
+  "condition": "production",
+  "pm_workers": 16,
+  "container_memory_mb": 138.3,
+  "per_worker_mb": 8.6,
+  "theoretical_max_workers": 118,
+  "memory_budget_mb": 1024,
+  "wrk_threads": 4,
+  "wrk_duration_s": 120,
+  "timestamp": "2026-05-02T18:10:27.105632+00:00",
+  "req_per_sec": 2.56,
+  "latency_avg_ms": 6030.0,
+  "latency_p99_ms": 6450.0,
+  "errors": 0
+}

@@ -1,0 +1,9 @@
+services:
+  app:
+    mem_limit: 4g
+  mysql:
+    healthcheck:
+      start_period: 60s
+      interval: 2s
+      retries: 30
+      timeout: 5s

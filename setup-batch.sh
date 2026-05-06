@@ -14,9 +14,18 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Allow V3_APP_DIR override so v3 benchmark uses fresh cloned apps
+if [ -n "${V3_APP_DIR:-}" ]; then
+  APP_DIR="$V3_APP_DIR"
+else
+  case "$SYSTEM" in
+    internachi) APP_DIR="$SCRIPT_DIR/internachi/application" ;;
+    nwidart)    APP_DIR="$SCRIPT_DIR/nwidart/application" ;;
+    *) echo "ERROR: system must be 'internachi' or 'nwidart'" >&2; exit 1 ;;
+  esac
+fi
 case "$SYSTEM" in
-  internachi) APP_DIR="$SCRIPT_DIR/internachi/application" ;;
-  nwidart)    APP_DIR="$SCRIPT_DIR/nwidart/application" ;;
+  internachi|nwidart) ;;
   *) echo "ERROR: system must be 'internachi' or 'nwidart'" >&2; exit 1 ;;
 esac
 

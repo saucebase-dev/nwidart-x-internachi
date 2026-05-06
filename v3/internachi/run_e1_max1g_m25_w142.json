@@ -1,0 +1,71 @@
+{
+  "system": "internachi",
+  "module_count": 25,
+  "workers_spec": "max:1024",
+  "workers": 142,
+  "label": "e1_max1g",
+  "condition": "production",
+  "session_driver": "redis",
+  "cache_store": "redis",
+  "container_memory_mb": 64.0,
+  "per_worker_mb": 0.5,
+  "theoretical_max_workers": 2048,
+  "memory_budget_mb": 1024,
+  "wrk_threads": 8,
+  "wrk_connections": 100,
+  "wrk_duration_s": 60,
+  "wrk_runs": 3,
+  "timestamp": "2026-05-03T17:31:20.459905+00:00",
+  "bare": {
+    "req_per_sec": 62.43,
+    "latency_avg_ms": 1510.0,
+    "latency_p99_ms": 2670.0,
+    "errors_total": 0,
+    "runs": [
+      {
+        "req_per_sec": 70.93,
+        "latency_avg_ms": 1330.0,
+        "latency_p99_ms": 2530.0,
+        "errors": 0
+      },
+      {
+        "req_per_sec": 60.91,
+        "latency_avg_ms": 1550.0,
+        "latency_p99_ms": 3260.0,
+        "errors": 0
+      },
+      {
+        "req_per_sec": 62.43,
+        "latency_avg_ms": 1510.0,
+        "latency_p99_ms": 2670.0,
+        "errors": 0
+      }
+    ]
+  },
+  "data": {
+    "req_per_sec": 50.51,
+    "latency_avg_ms": 1860.0,
+    "latency_p99_ms": 3380.0,
+    "errors_total": 0,
+    "runs": [
+      {
+        "req_per_sec": 51.41,
+        "latency_avg_ms": 1840.0,
+        "latency_p99_ms": 3380.0,
+        "errors": 0
+      },
+      {
+        "req_per_sec": 50.51,
+        "latency_avg_ms": 1860.0,
+        "latency_p99_ms": 3250.0,
+        "errors": 0
+      },
+      {
+        "req_per_sec": 43.89,
+        "latency_avg_ms": 2110.0,
+        "latency_p99_ms": 4080.0,
+        "errors": 0
+      }
+    ]
+  }
+}
